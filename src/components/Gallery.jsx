@@ -34,6 +34,11 @@ const defaultProjects = [
     title: "Pesas libres",
     cat: "Instalaciones",
   },
+  {
+    src: `${import.meta.env.BASE_URL}photos/istockphoto-2234496580-612x612.jpg`,
+    title: "Entrenamiento de pecho",
+    cat: "Clases",
+  },
 ];
 
 const filters = ["Todos", "Instalaciones", "Clases", "Equipo", "Mías"];
