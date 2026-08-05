@@ -2,9 +2,9 @@ const CONFIG_KEY = "modo-gym-config";
 const PHOTOS_KEY = "modo-gym-photos";
 
 export const defaultConfig = {
-  whatsapp: "0985136117",
-  whatsappIntl: "593985136117",
-  instagram: "modogym",
+  whatsapp: "0998837540",
+  whatsappIntl: "593998837540",
+  instagram: "modo.gym",
   address: "Av. Principal 1234, Quito",
 };
 

@@ -119,7 +119,7 @@ export default function AdminPanel({ open, onClose }) {
                   type="text"
                   value={cfg.whatsapp}
                   onChange={(e) => updateField("whatsapp", e.target.value)}
-                  placeholder="0985136117"
+                  placeholder="0998837540"
                 />
               </label>
               <label>
@@ -128,7 +128,7 @@ export default function AdminPanel({ open, onClose }) {
                   type="text"
                   value={cfg.whatsappIntl}
                   onChange={(e) => updateField("whatsappIntl", e.target.value)}
-                  placeholder="593985136117"
+                  placeholder="593998837540"
                 />
                 <small>
                   Ejemplo: Ecuador 593 + número sin el 0 inicial → 593985136117
@@ -140,7 +140,7 @@ export default function AdminPanel({ open, onClose }) {
                   type="text"
                   value={cfg.instagram}
                   onChange={(e) => updateField("instagram", e.target.value)}
-                  placeholder="modogym"
+                  placeholder="modo.gym"
                 />
               </label>
               <label>

@@ -3,62 +3,49 @@ import "./Plans.css";
 
 const plans = [
   {
-    name: "Pase de día",
-    price: "$5",
+    name: "Diario",
+    price: "$1.75",
     period: "/ día",
-    desc: "Perfecto para probar el gimnasio",
+    desc: "Pruébanos sin compromiso",
     features: [
-      "Acceso a todas las zonas",
+      "Acceso por un día",
+      "Zona de pesas y cardio",
       "Clase guiada incluida",
       "Locker y regaderas",
-      "Acceso por un día",
     ],
     highlight: false,
     cta: "Probar un día",
   },
   {
-    name: "Básico",
-    price: "$25",
+    name: "Mensual",
+    price: "$20",
     period: "/ mes",
-    desc: "Lo esencial para entrenar libre",
+    desc: "El plan para empezar tu cambio",
     features: [
-      "Acceso libre en horario 6am–10pm",
+      "Acceso libre en horario completo",
       "Musculación y cardio",
+      "Todas las clases incluidas",
       "Evaluación inicial",
       "App con rutinas",
     ],
     highlight: false,
-    cta: "Elegir Básico",
+    cta: "Elegir Mensual",
   },
   {
-    name: "Pro",
-    price: "$40",
-    period: "/ mes",
-    desc: "El favorito de nuestros miembros",
+    name: "Trimestral",
+    price: "$50",
+    period: "/ trimestre",
+    desc: "El mejor precio, ahorra mes a mes",
     features: [
+      "Todo lo del plan mensual",
       "Acceso 24/7",
-      "Todas las clases incluidas",
-      "CrossFit y funcional ilimitado",
+      "Clases ilimitadas",
       "Rutina personalizada mensual",
+      "Plan nutricional básico",
       "Invitado gratis 1 vez al mes",
     ],
     highlight: true,
-    cta: "Elegir Pro",
-  },
-  {
-    name: "Premium",
-    price: "$60",
-    period: "/ mes",
-    desc: "Experiencia completa con coach",
-    features: [
-      "Todo lo del plan Pro",
-      "4 sesiones de personal trainer",
-      "Plan nutricional básico",
-      "Acceso a sauna y spa",
-      "Seguimiento de resultados",
-    ],
-    highlight: false,
-    cta: "Elegir Premium",
+    cta: "Elegir Trimestral",
   },
 ];
 
@@ -94,7 +81,7 @@ export default function Plans() {
               transition={{ delay: i * 0.1, duration: 0.6, ease: "easeOut" }}
               whileHover={{ y: -8 }}
             >
-              {p.highlight && <div className="plan-badge">Más popular</div>}
+              {p.highlight && <div className="plan-badge">Mejor valor</div>}
               <h3 className="plan-name">{p.name}</h3>
               <div className="plan-price">
                 {p.price}
