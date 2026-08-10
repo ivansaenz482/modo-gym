@@ -57,5 +57,32 @@ export const api = {
   getClients: () => request("/clients"),
   getClient: (id) => request(`/clients/${id}`),
   getExercises: () => request("/exercises"),
+  createExercise: (body) => request("/exercises", { method: "POST", body }),
+  updateExercise: (id, body) => request(`/exercises/${id}`, { method: "PATCH", body }),
+  uploadFile: (file) => upload("/upload", file),
   getQr: () => request("/qr"),
 };
+
+export function mediaUrl(path) {
+  if (!path) return null;
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${API_URL}${path}`;
+}
+
+async function upload(path, file) {
+  const token = getToken();
+  const form = new FormData();
+  form.append("file", file);
+  const res = await fetch(`${API_URL}${path}`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: form,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(data.message || data.error || `Error ${res.status}`);
+    err.status = res.status;
+    throw err;
+  }
+  return data;
+}

@@ -2,6 +2,9 @@ import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import helmet from "helmet";
+import express from "express";
+import { mkdirSync } from "node:fs";
+import { join } from "node:path";
 import { AppModule } from "./app.module.js";
 
 async function bootstrap() {
@@ -9,6 +12,12 @@ async function bootstrap() {
 
   app.setGlobalPrefix("api");
   app.use(helmet());
+
+  const uploadsDir = process.env.UPLOAD_DIR
+    ? join(process.cwd(), process.env.UPLOAD_DIR)
+    : join(process.cwd(), "uploads");
+  mkdirSync(uploadsDir, { recursive: true });
+  app.use("/api/uploads", express.static(uploadsDir));
 
   const corsOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
     .split(",")

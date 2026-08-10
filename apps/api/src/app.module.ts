@@ -9,6 +9,7 @@ import { ProgressModule } from "./progress/progress.module.js";
 import { NutritionModule } from "./nutrition/nutrition.module.js";
 import { AiModule } from "./ai/ai.module.js";
 import { QrModule } from "./qr/qr.module.js";
+import { UploadModule } from "./upload/upload.module.js";
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { QrModule } from "./qr/qr.module.js";
     NutritionModule,
     AiModule,
     QrModule,
+    UploadModule,
   ],
 })
 export class AppModule {}

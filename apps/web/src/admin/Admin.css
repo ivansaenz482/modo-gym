@@ -399,3 +399,151 @@
   color: var(--accent);
   word-break: break-all;
 }
+
+/* Ejercicios (media) */
+.admin-ex-view {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
+.admin-ex-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.admin-ex-form h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.admin-ex-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.admin-ex-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.admin-ex-form input,
+.admin-ex-form select {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 0.65rem 0.85rem;
+  font-size: 0.92rem;
+  outline: none;
+  transition: border-color 0.25s ease;
+}
+
+.admin-ex-form input:focus,
+.admin-ex-form select:focus {
+  border-color: var(--accent);
+}
+
+.admin-ex-form .admin-ex-form-desc {
+  grid-column: 1 / -1;
+}
+
+.admin-ex-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+.admin-ex-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-ex-thumb {
+  aspect-ratio: 16 / 10;
+  background: var(--bg-soft);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-ex-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-ex-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.admin-ex-badge {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+}
+
+.admin-ex-info {
+  padding: 0.9rem 1rem 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.admin-ex-info b {
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.admin-ex-info small {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.admin-ex-actions {
+  padding: 0.75rem 1rem 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-ex-actions .btn {
+  font-size: 0.82rem;
+  padding: 0.45rem 0.85rem;
+}
+
+.admin-ex-actions .btn.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.admin-ex-actions .btn-danger {
+  background: rgba(255, 59, 48, 0.12);
+  border-color: rgba(255, 59, 48, 0.35);
+  color: var(--accent);
+}

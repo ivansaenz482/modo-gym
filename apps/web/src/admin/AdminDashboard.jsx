@@ -1,13 +1,22 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { api, clearToken } from "../api";
+import { api, clearToken, mediaUrl } from "../api";
 import QrPanel from "./QrPanel";
 
 const tabs = [
   { id: "resumen", label: "Resumen" },
   { id: "clientes", label: "Clientes" },
+  { id: "ejercicios", label: "Ejercicios" },
   { id: "qr", label: "Códigos QR" },
 ];
+
+const muscleGroups = ["Pecho", "Espalda", "Hombros", "Bíceps", "Tríceps", "Pierna", "Core", "Glúteos", "Gemelos", "Cardio"];
+const categories = ["Fuerza", "Aislamiento", "Peso corporal", "Cardio", "Máquinas"];
+
+const IMG_ACCEPT = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const VID_ACCEPT = ["video/mp4", "video/webm", "video/quicktime"];
+const MAX_IMG = 5 * 1024 * 1024;
+const MAX_VID = 50 * 1024 * 1024;
 
 export default function AdminDashboard({ user, onLogout }) {
   const [tab, setTab] = useState("resumen");
@@ -15,6 +24,12 @@ export default function AdminDashboard({ user, onLogout }) {
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [msg, setMsg] = useState("");
+
+  const [exercises, setExercises] = useState([]);
+  const [exLoading, setExLoading] = useState(false);
+  const [form, setForm] = useState({ name: "", muscleGroup: "Pecho", category: "Fuerza", description: "" });
+  const [busy, setBusy] = useState({});
 
   const load = async () => {
     setLoading(true);
@@ -29,8 +44,21 @@ export default function AdminDashboard({ user, onLogout }) {
     }
   };
 
+  const loadExercises = async () => {
+    setExLoading(true);
+    try {
+      const data = await api.getExercises();
+      setExercises(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setExLoading(false);
+    }
+  };
+
   useEffect(() => {
     load();
+    loadExercises();
   }, []);
 
   const openClient = async (id) => {
@@ -39,6 +67,62 @@ export default function AdminDashboard({ user, onLogout }) {
       setSelected(detail);
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const notify = (text, isError = false) => {
+    setError(isError ? text : "");
+    if (!isError) setMsg(text);
+    setTimeout(() => (isError ? setError("") : setMsg("")), 3500);
+  };
+
+  const createExercise = async (e) => {
+    e.preventDefault();
+    const name = form.name.trim();
+    if (name.length < 2) return notify("El nombre debe tener al menos 2 caracteres", true);
+    setBusy((b) => ({ ...b, _create: true }));
+    try {
+      const created = await api.createExercise(form);
+      notify("Ejercicio creado ✓");
+      setForm({ name: "", muscleGroup: form.muscleGroup, category: form.category, description: "" });
+      await loadExercises();
+    } catch (err) {
+      notify(err.message, true);
+    } finally {
+      setBusy((b) => ({ ...b, _create: false }));
+    }
+  };
+
+  const uploadMedia = async (exercise, kind, file) => {
+    const accept = kind === "imageUrl" ? IMG_ACCEPT : VID_ACCEPT;
+    const max = kind === "imageUrl" ? MAX_IMG : MAX_VID;
+    const label = kind === "imageUrl" ? "imagen" : "video";
+    if (!accept.includes(file.type)) return notify(`Solo se permiten ${kind === "imageUrl" ? "imágenes" : "videos"}`, true);
+    if (file.size > max) return notify(`El ${label} supera el máximo de ${Math.round(max / 1024 / 1024)} MB`, true);
+
+    setBusy((b) => ({ ...b, [exercise.id]: { ...(b[exercise.id] || {}), [kind]: true } }));
+    try {
+      const uploaded = await api.uploadFile(file);
+      const updated = await api.updateExercise(exercise.id, { [kind]: uploaded.url });
+      setExercises((list) => list.map((ex) => (ex.id === updated.id ? updated : ex)));
+      notify(`${label === "imagen" ? "Foto" : "Video"} subido ✓`);
+    } catch (err) {
+      notify(err.message, true);
+    } finally {
+      setBusy((b) => ({ ...b, [exercise.id]: { ...(b[exercise.id] || {}), [kind]: false } }));
+    }
+  };
+
+  const clearMedia = async (exercise, kind) => {
+    setBusy((b) => ({ ...b, [exercise.id]: { ...(b[exercise.id] || {}), [kind]: true } }));
+    try {
+      const updated = await api.updateExercise(exercise.id, { [kind]: "" });
+      setExercises((list) => list.map((ex) => (ex.id === updated.id ? updated : ex)));
+      notify(`${kind === "imageUrl" ? "Foto" : "Video"} eliminado`);
+    } catch (err) {
+      notify(err.message, true);
+    } finally {
+      setBusy((b) => ({ ...b, [exercise.id]: { ...(b[exercise.id] || {}), [kind]: false } }));
     }
   };
 
@@ -75,6 +159,7 @@ export default function AdminDashboard({ user, onLogout }) {
       </nav>
 
       {error && <div className="admin-msg admin-msg-error">{error}</div>}
+      {msg && <div className="admin-msg">{msg}</div>}
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -101,8 +186,8 @@ export default function AdminDashboard({ user, onLogout }) {
                 <span className="admin-stat-label">Registros de progreso</span>
               </div>
               <div className="admin-stat-card">
-                <span className="admin-stat-num">2</span>
-                <span className="admin-stat-label">Códigos QR disponibles</span>
+                <span className="admin-stat-num">{exercises.length}</span>
+                <span className="admin-stat-label">Ejercicios en biblioteca</span>
               </div>
             </div>
           )}
@@ -252,6 +337,125 @@ export default function AdminDashboard({ user, onLogout }) {
                   </AnimatePresence>
                 </>
               )}
+            </div>
+          )}
+
+          {tab === "ejercicios" && (
+            <div className="admin-ex-view">
+              <form className="admin-ex-form" onSubmit={createExercise}>
+                <h3>Nuevo ejercicio</h3>
+                <div className="admin-ex-form-grid">
+                  <label>
+                    Nombre
+                    <input
+                      type="text"
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      placeholder="Press de banca"
+                      required
+                    />
+                  </label>
+                  <label>
+                    Grupo muscular
+                    <select
+                      value={form.muscleGroup}
+                      onChange={(e) => setForm({ ...form, muscleGroup: e.target.value })}
+                    >
+                      {muscleGroups.map((g) => (
+                        <option key={g} value={g}>{g}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    Categoría
+                    <select
+                      value={form.category}
+                      onChange={(e) => setForm({ ...form, category: e.target.value })}
+                    >
+                      {categories.map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="admin-ex-form-desc">
+                    Descripción (opcional)
+                    <input
+                      type="text"
+                      value={form.description}
+                      onChange={(e) => setForm({ ...form, description: e.target.value })}
+                      placeholder="Técnica, consejos..."
+                    />
+                  </label>
+                </div>
+                <button type="submit" className="btn btn-primary" disabled={busy._create}>
+                  {busy._create ? "Creando..." : "Crear ejercicio"}
+                </button>
+              </form>
+
+              <div className="admin-ex-grid">
+                {exLoading ? (
+                  <p className="admin-empty">Cargando ejercicios...</p>
+                ) : exercises.length === 0 ? (
+                  <p className="admin-empty">No hay ejercicios. Crea el primero arriba.</p>
+                ) : (
+                  exercises.map((ex) => {
+                    const img = mediaUrl(ex.imageUrl);
+                    const vid = mediaUrl(ex.videoUrl);
+                    return (
+                      <div className="admin-ex-card" key={ex.id}>
+                        <div className="admin-ex-thumb">
+                          {img ? (
+                            <img src={img} alt={ex.name} />
+                          ) : (
+                            <span className="admin-ex-placeholder">Sin foto</span>
+                          )}
+                          {vid && <span className="admin-ex-badge">▶ Video</span>}
+                        </div>
+                        <div className="admin-ex-info">
+                          <b>{ex.name}</b>
+                          <small>{ex.muscleGroup} · {ex.category}</small>
+                        </div>
+                        <div className="admin-ex-actions">
+                          <label className={`btn btn-ghost ${busy[ex.id]?.imageUrl ? "disabled" : ""}`}>
+                            {busy[ex.id]?.imageUrl ? "Subiendo..." : "Foto"}
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/png,image/webp,image/gif"
+                              style={{ display: "none" }}
+                              onChange={(e) => {
+                                const f = e.target.files?.[0];
+                                if (f) uploadMedia(ex, "imageUrl", f);
+                                e.target.value = "";
+                              }}
+                            />
+                          </label>
+                          <label className={`btn btn-ghost ${busy[ex.id]?.videoUrl ? "disabled" : ""}`}>
+                            {busy[ex.id]?.videoUrl ? "Subiendo..." : "Video"}
+                            <input
+                              type="file"
+                              accept="video/mp4,video/webm,video/quicktime"
+                              style={{ display: "none" }}
+                              onChange={(e) => {
+                                const f = e.target.files?.[0];
+                                if (f) uploadMedia(ex, "videoUrl", f);
+                                e.target.value = "";
+                              }}
+                            />
+                          </label>
+                          {(img || vid) && (
+                            <button
+                              className="btn btn-danger"
+                              onClick={() => clearMedia(ex, img && !vid ? "imageUrl" : "videoUrl")}
+                            >
+                              Quitar
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
             </div>
           )}
 
