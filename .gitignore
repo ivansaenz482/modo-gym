@@ -1,4 +1,17 @@
 node_modules/
 dist/
+build/
+coverage/
 .DS_Store
 *.log
+.env
+.env.local
+.env.*.local
+.expo/
+.expo-shared/
+apps/mobile/android/
+apps/mobile/ios/
+apps/api/generated/
+apps/api/dist/
+apps/api/prisma/generated/
+*.tsbuildinfo

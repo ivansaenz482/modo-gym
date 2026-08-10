@@ -1,0 +1,88 @@
+{
+  "name": "Generador de Rutinas MODO GYM",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "routine-generator",
+        "responseMode": "responseNode",
+        "options": {
+          "responseData": "allEntries",
+          "rawBody": false
+        }
+      },
+      "id": "b1c1c5f5-8f10-4e5a-9f0a-111111111111",
+      "name": "Webhook de rutina",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer ={{$env.OPENAI_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"model\": \"gpt-4o-mini\",\n  \"temperature\": 0.7,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Eres un entrenador personal experto. Genera una rutina de ejercicios en JSON con este formato exacto: { \\\"name\\\": string, \\\"days\\\": [ { \\\"name\\\": string, \\\"exercises\\\": [ { \\\"name\\\": string, \\\"muscleGroup\\\": string, \\\"sets\\\": number, \\\"reps\\\": string, \\\"restSeconds\\\": number } ] } ] }. Respeta los días, objetivo y nivel del usuario. En español.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Días por semana: {{$json.body.daysPerWeek}}. Objetivo: {{$json.body.goal}}. Nivel: {{$json.body.experience}}. Equipo disponible: {{$json.body.equipment}}. Notas: {{$json.body.notes}}\"\n    }\n  ]\n}"
+      },
+      "id": "c2c2c6f6-9a11-4e5b-8f1b-222222222222",
+      "name": "Llamar a OpenAI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "options": {
+          "response": {
+            "responseCode": 200,
+            "respondWith": "json",
+            "responseBody": "={{ $('Llamar a OpenAI').item.json.choices[0].message.content }}",
+            "contentType": "json"
+          }
+        }
+      },
+      "id": "d3d3d7f7-aa22-4e5c-9f2c-333333333333",
+      "name": "Responder rutina",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [760, 300]
+    }
+  ],
+  "connections": {
+    "Webhook de rutina": {
+      "main": [
+        [
+          {
+            "node": "Llamar a OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Llamar a OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Responder rutina",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

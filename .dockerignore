@@ -1,0 +1,13 @@
+node_modules
+**/node_modules
+**/dist
+**/build
+**/coverage
+.git
+*.log
+.env
+.env.local
+.expo
+apps/mobile/android
+apps/mobile/ios
+dist

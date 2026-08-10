@@ -1,0 +1,62 @@
+﻿services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: modo-gym-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-modogym}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-modogym_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-modogym}
+    ports:
+      - "${POSTGRES_PORT:-55432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-modogym} -d ${POSTGRES_DB:-modogym}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: development
+    container_name: modo-gym-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-modogym}:${POSTGRES_PASSWORD:-modogym_dev_password}@postgres:5432/${POSTGRES_DB:-modogym}?schema=public
+    ports:
+      - "${API_PORT:-3000}:3000"
+    volumes:
+      - ./apps/api/src:/app/apps/api/src
+      - ./apps/api/prisma:/app/apps/api/prisma
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "npx prisma migrate dev && npm run start:dev"
+
+  n8n:
+    image: n8nio/n8n:${N8N_VERSION:-latest}
+    container_name: modo-gym-n8n
+    restart: unless-stopped
+    environment:
+      N8N_HOST: ${N8N_HOST:-localhost}
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      WEBHOOK_URL: ${N8N_WEBHOOK_URL:-http://localhost:5678/}
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: ${N8N_USER:-admin}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_PASSWORD:-modogym_n8n_password}
+      GENERIC_TIMEZONE: ${TZ:-America/Guayaquil}
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  postgres_data:
+  n8n_data:

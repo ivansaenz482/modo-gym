@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+enum Goal {
+  PERDER_PESO
+  GANAR_MASA
+  TONIFICAR
+  RESISTENCIA
+  SALUD
+}
+
+enum Experience {
+  PRINCIPIANTE
+  INTERMEDIO
+  AVANZADO
+}
+
+enum RoutineSource {
+  PROPIA
+  IA
+}
+
+model User {
+  id           String         @id @default(uuid())
+  email        String         @unique
+  passwordHash String
+  name         String
+  phone        String?
+  role         Role           @default(CLIENT)
+  profile      ClientProfile?
+  routines     Routine[]
+  progress     ProgressEntry[]
+  nutrition    NutritionPlan[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model ClientProfile {
+  id             String     @id @default(uuid())
+  userId         String     @unique
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  age            Int?
+  gender         String?
+  heightCm       Int?
+  startWeightKg  Float?
+  goal           Goal?
+  daysPerWeek    Int        @default(3)
+  experience     Experience @default(PRINCIPIANTE)
+  notes          String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Exercise {
+  id          String   @id @default(uuid())
+  name        String
+  muscleGroup String
+  category    String
+  description String?
+  imageUrl    String?
+  videoUrl    String?
+  routines    RoutineExercise[]
+  createdAt   DateTime @default(now())
+}
+
+model Routine {
+  id           String             @id @default(uuid())
+  clientId     String
+  client       User               @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name         String
+  source       RoutineSource      @default(PROPIA)
+  daysPerWeek  Int                @default(3)
+  isActive     Boolean            @default(true)
+  exercises    RoutineExercise[]
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+}
+
+model RoutineExercise {
+  id          String   @id @default(uuid())
+  routineId   String
+  routine     Routine  @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  exerciseId  String
+  exercise    Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  order       Int      @default(1)
+  sets        Int      @default(3)
+  reps        String?
+  restSeconds Int      @default(60)
+  weightKg    Float?
+
+  @@unique([routineId, exerciseId, order])
+}
+
+model NutritionPlan {
+  id            String   @id @default(uuid())
+  clientId      String
+  client        User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name          String   @default("Mi plan")
+  dailyCalories Int?
+  proteinG      Float?
+  carbsG        Float?
+  fatG          Float?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ProgressEntry {
+  id          String   @id @default(uuid())
+  clientId    String
+  client      User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  date        DateTime @default(now())
+  weightKg    Float?
+  bodyFatPct  Float?
+  chestCm     Float?
+  waistCm     Float?
+  armCm       Float?
+  notes       String?
+  createdAt   DateTime @default(now())
+}

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Routes, Route, Link } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Stats from "./components/Stats";
@@ -11,9 +12,12 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import SocialButtons from "./components/SocialButtons";
 import AdminPanel from "./components/AdminPanel";
+import AdminLogin from "./admin/AdminLogin";
+import AdminDashboard from "./admin/AdminDashboard";
 import { useState } from "react";
+import { isAuthenticated } from "./api";
 
-export default function App() {
+function Landing() {
   const [adminOpen, setAdminOpen] = useState(false);
 
   return (
@@ -37,5 +41,39 @@ export default function App() {
       <SocialButtons />
       <AdminPanel open={adminOpen} onClose={() => setAdminOpen(false)} />
     </motion.div>
+  );
+}
+
+function AdminPage() {
+  const [user, setUser] = useState(null);
+
+  if (!user && !isAuthenticated()) {
+    return <AdminLogin onLogin={setUser} />;
+  }
+
+  return (
+    <AdminDashboard user={user} onLogout={() => setUser(null)} />
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/admin" element={<AdminPage />} />
+      <Route
+        path="*"
+        element={
+          <div className="container" style={{ padding: "6rem 0", textAlign: "center" }}>
+            <h1 style={{ fontFamily: "var(--font-display)", fontSize: "3rem" }}>
+              404 — No encontrado
+            </h1>
+            <Link to="/" className="btn btn-primary" style={{ marginTop: "1.5rem" }}>
+              Volver al inicio
+            </Link>
+          </div>
+        }
+      />
+    </Routes>
   );
 }

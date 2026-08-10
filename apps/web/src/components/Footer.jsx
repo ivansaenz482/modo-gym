@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import "./Footer.css";
 
 export default function Footer({ onAdmin }) {
@@ -26,9 +27,14 @@ export default function Footer({ onAdmin }) {
           © {new Date().getFullYear()} MODO GYM. Todos los derechos reservados.
         </p>
 
-        <button className="admin-trigger" onClick={onAdmin}>
-          🔧 Administrar
-        </button>
+        <div className="footer-admin-row">
+          <Link to="/admin" className="admin-trigger">
+            🔐 Panel de administración
+          </Link>
+          <button className="admin-trigger" onClick={onAdmin}>
+            🔧 Ajustes locales
+          </button>
+        </div>
       </div>
     </motion.footer>
   );
