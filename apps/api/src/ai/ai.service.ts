@@ -95,7 +95,7 @@ export class AiService {
     const apiKey = this.config.get<string>("N8N_API_KEY");
     const path = this.config.get<string>("N8N_ROUTINE_WEBHOOK_PATH") || "/webhook/routine-generator";
 
-    if (!base || !apiKey || apiKey.includes("cambia_por")) {
+    if (!base || base.includes("cambia_por")) {
       this.logger.warn("N8n no configurado, usando generador local");
       return null;
     }
@@ -105,12 +105,13 @@ export class AiService {
     const timer = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (apiKey && !apiKey.includes("cambia_por")) {
+        headers.Authorization = `Bearer ${apiKey}`;
+      }
       const res = await fetch(`${base}${path}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
+        headers,
         body: JSON.stringify(dto),
         signal: controller.signal,
       });

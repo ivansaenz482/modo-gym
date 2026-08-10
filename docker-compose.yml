@@ -51,6 +51,8 @@
       N8N_BASIC_AUTH_ACTIVE: "true"
       N8N_BASIC_AUTH_USER: ${N8N_USER:-admin}
       N8N_BASIC_AUTH_PASSWORD: ${N8N_PASSWORD:-modogym_n8n_password}
+      # Si defines OPENAI_API_KEY en .env, el workflow podrá llamar a OpenAI.
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       GENERIC_TIMEZONE: ${TZ:-America/Guayaquil}
     ports:
       - "${N8N_PORT:-5678}:5678"

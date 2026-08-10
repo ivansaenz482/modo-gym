@@ -20,6 +20,7 @@
     "docker:down": "docker compose down",
     "db:migrate": "npm run db:migrate -w @modo-gym/api",
     "db:seed": "npm run db:seed -w @modo-gym/api",
+    "n8n:setup": "node scripts/setup-n8n.mjs",
     "test": "turbo run test"
   },
   "devDependencies": {
