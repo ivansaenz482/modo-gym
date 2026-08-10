@@ -110,6 +110,14 @@ curl -X POST http://localhost:5678/webhook/routine-generator -H "Content-Type: a
   -d '{"daysPerWeek":4,"goal":"GANAR_MASA","experience":"INTERMEDIO"}'
 ```
 
+### Panel de administrador
+
+- **Resumen:** métricas de clientes, rutinas, progreso y ejercicios.
+- **Clientes:** lista y detalle de cada cliente (perfil, rutinas, progreso, nutrición).
+- **Ejercicios:** crea ejercicios y sube su foto o video. Las subidas se guardan en `apps/api/uploads/` y se sirven desde
+  `/api/uploads/*` (solo imágenes jpg/png/webp/gif y videos mp4/webm/mov, máx. 50 MB).
+- **Códigos QR:** enlaces para descargar la app y abrir la web.
+
 ## App móvil (Play Store)
 
 - **Framework:** Expo SDK 57 (React Native 0.86, React 19).
@@ -138,6 +146,9 @@ curl -X POST http://localhost:5678/webhook/routine-generator -H "Content-Type: a
 | PATCH | `/api/clients/:id` | Editar perfil |
 | GET | `/api/exercises` | Biblioteca de ejercicios |
 | POST | `/api/exercises` | Crear ejercicio (admin) |
+| PATCH | `/api/exercises/:id` | Actualizar ejercicio, p. ej. foto/video (admin) |
+| POST | `/api/upload` | Subir imagen/video (multipart, admin) → devuelve URL |
+| GET | `/api/upload/...` (estático) | Archivos subidos servidos desde `/api/uploads/*` |
 | GET | `/api/routines/mine` | Rutinas del cliente |
 | POST | `/api/routines` | Crear rutina propia |
 | POST | `/api/ai/routine` | Generar rutina con IA (N8n o fallback) |
