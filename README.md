@@ -124,7 +124,31 @@ curl -X POST http://localhost:5678/webhook/routine-generator -H "Content-Type: a
 - **Pantallas:** inicio, login/registro, onboarding (objetivo, días/semana, nivel), rutina (IA o propia), biblioteca de
   ejercicios con imágenes/videos, progreso y nutrición.
 - **Publicación:** usa [EAS Build](https://docs.expo.dev/build/introduction/) para generar el APK/AAB. `android.package =
-  com.modogym.app` ya está configurado en `app.json`.
+  com.modogym.app` ya está configurado en `app.config.js`.
+
+### Generar APK de prueba con EAS Build
+
+1. Instala dependencias del workspace (`npm install` en la raíz).
+2. Inicia sesión en EAS: `npx eas-cli login` (cuenta de expo.dev).
+3. Configura el proyecto la primera vez: `npm run build:configure -w @modo-gym/mobile`.
+4. Edita en `apps/mobile/eas.json` la variable `EXPO_PUBLIC_API_URL` del perfil `preview` con la URL de tu API
+   (debe ser alcanzable desde el teléfono, p. ej. `https://api.modogym.com` o tu IP de LAN).
+5. Genera el APK de prueba:
+   ```bash
+   npm run build:android:preview -w @modo-gym/mobile
+   ```
+   El perfil `preview` genera un **APK instalable** (`buildType: apk`) e incluye `usesCleartextTraffic: true`
+   para poder conectar con APIs en HTTP sin certificado (solo este perfil).
+6. Descarga el APK desde el enlace que muestra EAS o instálalo con `npx eas-cli build:run -p android`.
+
+### Generar AAB para Play Store
+
+```bash
+npm run build:android:production -w @modo-gym/mobile
+```
+
+El perfil `production` genera un AAB firmado para subir a la consola de Play. Requiere cuenta de desarrollador
+y credenciales de firma configuradas en EAS.
 
 ### Notas para aprobar en Play Store
 

@@ -2,6 +2,7 @@ import Constants from "expo-constants";
 import { Platform } from "react-native";
 
 const getApiUrl = () => {
+  if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
   const extra = Constants.expoConfig?.extra as { apiUrl?: string } | undefined;
   if (extra?.apiUrl) return extra.apiUrl;
   if (Platform.OS === "android") return "http://10.0.2.2:3000";
