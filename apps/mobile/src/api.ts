@@ -33,7 +33,7 @@ async function request<T = any>(
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (auth && token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_URL}${path}`, {
+  const res = await fetch(`${API_URL}/api${path}`, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
