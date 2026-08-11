@@ -25,7 +25,6 @@ const base = {
   },
   plugins: [
     "expo-router",
-    ["expo-splash-screen", { backgroundColor: "#0d0d0f" }],
   ],
   experiments: {
     typedRoutes: true,
