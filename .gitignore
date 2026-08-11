@@ -17,3 +17,5 @@ apps/api/prisma/generated/
 apps/api/uploads/*
 !apps/api/uploads/.gitkeep
 *.tsbuildinfo
+
+apps/mobile/builds/
