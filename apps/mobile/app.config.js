@@ -5,6 +5,21 @@
 //   expone en Constants.expoConfig.extra.apiUrl.
 // - EAS_BUILD_PROFILE: lo define EAS en cada build ("development", "preview", "production").
 
+const { withAndroidManifest } = require("@expo/config-plugins");
+
+// SDK 57 ya no aplica android.usesCleartextTraffic desde la config, así que lo
+// inyectamos directamente en el AndroidManifest con un config plugin.
+function withCleartextTraffic(config) {
+  return withAndroidManifest(config, (configWithManifest) => {
+    const application =
+      configWithManifest.modResults.manifest.application?.[0];
+    if (application) {
+      application.$["android:usesCleartextTraffic"] = "true";
+    }
+    return configWithManifest;
+  });
+}
+
 const base = {
   name: "MODO GYM",
   slug: "modo-gym",
@@ -20,12 +35,6 @@ const base = {
     package: "com.modogym.app",
     permissions: ["INTERNET"],
   },
-  androidStatusBar: {
-    backgroundColor: "#0d0d0f",
-  },
-  plugins: [
-    "expo-router",
-  ],
   experiments: {
     typedRoutes: true,
   },
@@ -44,15 +53,16 @@ module.exports = ({ config }) => {
     base.extra.apiUrl ||
     "http://localhost:3000";
 
-  const android = { ...base.android };
+  const plugins = ["expo-router"];
   if (profile === "preview") {
     // El APK de prueba conecta a una API en HTTP (LAN o VPS) sin certificado HTTPS.
-    android.usesCleartextTraffic = true;
+    plugins.push(withCleartextTraffic);
   }
 
   return {
     ...base,
+    plugins,
     extra: { ...base.extra, apiUrl },
-    android,
+    android: base.android,
   };
 };
