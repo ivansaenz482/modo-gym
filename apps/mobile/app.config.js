@@ -32,6 +32,9 @@ const base = {
   },
   extra: {
     apiUrl: "http://localhost:3000",
+    eas: {
+      projectId: "d855b824-26be-4bb6-b090-cfb4f2c4e34d",
+    },
   },
 };
 
