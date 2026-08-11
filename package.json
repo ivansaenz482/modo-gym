@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "turbo run dev --parallel",
-    "dev:api": "npm run dev -w @modo-gym/api",
+    "dev:api": "npm run start:dev -w @modo-gym/api",
     "dev:web": "npm run dev -w @modo-gym/web",
     "dev:mobile": "npm run start -w @modo-gym/mobile",
     "build": "turbo run build",
