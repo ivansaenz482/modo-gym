@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { api } from "../../src/api";
 import { theme } from "../../src/theme";
 
-const GROUPS = ["Todos", "Pecho", "Espalda", "Pierna", "Hombros", "Bíceps", "Tríceps", "Core"];
+const GROUPS = ["Todos", "Pecho", "Espalda", "Pierna", "Hombros", "Bíceps", "Tríceps", "Core", "Cardio"];
 
 export default function ExercisesScreen() {
   const [group, setGroup] = useState("Todos");
