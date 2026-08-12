@@ -27,6 +27,12 @@ const base = {
   scheme: "modogym",
   orientation: "portrait",
   userInterfaceStyle: "dark",
+  icon: "./assets/icon.png",
+  splash: {
+    image: "./assets/splash.png",
+    resizeMode: "contain",
+    backgroundColor: "#0d0d0f",
+  },
   ios: {
     supportsTablet: true,
     bundleIdentifier: "com.modogym.app",
@@ -34,6 +40,10 @@ const base = {
   android: {
     package: "com.modogym.app",
     permissions: ["INTERNET"],
+    adaptiveIcon: {
+      foregroundImage: "./assets/adaptive-icon.png",
+      backgroundColor: "#0d0d0f",
+    },
   },
   experiments: {
     typedRoutes: true,
