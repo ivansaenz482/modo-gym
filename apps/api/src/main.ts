@@ -19,6 +19,13 @@ async function bootstrap() {
   mkdirSync(uploadsDir, { recursive: true });
   app.use("/api/uploads", express.static(uploadsDir));
 
+  // APK de la app para descarga directa desde el QR del gimnasio.
+  const downloadsDir = process.env.DOWNLOAD_DIR
+    ? join(process.cwd(), process.env.DOWNLOAD_DIR)
+    : join(process.cwd(), "downloads");
+  mkdirSync(downloadsDir, { recursive: true });
+  app.use("/api/downloads", express.static(downloadsDir));
+
   const corsOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
     .split(",")
     .map((o) => o.trim())

@@ -37,6 +37,13 @@ export default function QrPanel() {
         Imprime o comparte estos códigos QR. Uno lleva a la descarga de la app y
         el otro a la página web del gimnasio.
       </p>
+      {/localhost|192\.168\.|10\.|play\.google/.test(qrData.appDownloadUrl) && (
+        <p className="admin-empty">
+          ⚠️ La URL de descarga ({qrData.appDownloadUrl}) es local o un placeholder.
+          Si el QR no abre la app en los celulares, cambia la variable{" "}
+          <code>APP_DOWNLOAD_URL</code> del servidor por una URL pública o de la LAN.
+        </p>
+      )}
       <div className="qr-grid">
         <div className="qr-card">
           <h3>Descargar la App</h3>
